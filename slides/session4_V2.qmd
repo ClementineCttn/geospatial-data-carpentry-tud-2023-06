@@ -21,12 +21,16 @@ format:
 ```{r}
 #| label: setup
 #| include: false
+# install.packages("devtools")
+# devtools::install_github("hadley/emo")
+
 
 library(dplyr)
 library(sf)
 library(ggplot2)
 library(osmdata)
 library(leaflet)
+library(emo)
 
 
 knitr::opts_chunk$set(
@@ -95,6 +99,7 @@ Here, we have two options:
 or
 ![Brielle, New Jersey](fig/Brielle_NJ.jpeg){width=30%}
 
+## Which Brielle?
 ```{r osm-bounding-box2}
 bb <- getbb('Brielle, NL', format_out = 'data.frame')
 bb
@@ -138,12 +143,12 @@ head(x$osm_polygons)
 
 ## Mapping attributes
 
-Case Study: we are interested in mapping urbanisation in Delft in the 20th and 21st centuries.
+Case Study: we are interested in mapping building age in Brielle.
 We need to look into specific attributes:
 
-- the **building age** of buildings
+- the **age** of buildings
 - with a **subset** of buildings from after 1900
-- within the **Delft** bounding box
+- within the **Brielle** bounding box
 
 ## Projections
 
@@ -167,7 +172,13 @@ Then we use the `ggplot` function to visualise the buildings by age. The specifi
 ```{r map-age}
 #| eval: false
 
-buildings$build_date <- as.numeric(if_else(as.numeric(buildings$start_date) <1900, 1900,as.numeric(buildings$start_date)))
+buildings$build_date <- as.numeric(
+  if_else(
+    as.numeric(buildings$start_date) < 1900, 
+          1900, 
+          as.numeric(buildings$start_date)
+          )
+  )
 
  ggplot(data = buildings) +
    geom_sf(aes(fill = build_date, colour=build_date))  +
@@ -182,7 +193,7 @@ buildings$build_date <- as.numeric(if_else(as.numeric(buildings$start_date) <190
 :::: {.columns}
 
 ::: {.column width="60%"}
-![](fig/rmd-04a-map-age-1.png){fig-align="center"}
+![](fig/rmd-04map-age-1.png){fig-align="center"}
 :::
 
 ::: {.column width="40%"}
@@ -264,14 +275,12 @@ encode spatial vector data."](https://cran.r-project.org/web/packages/sf/sf.pdf)
 
 ## Conservation in Brielle, NL `r emo::ji("building")` 
 
-Let's focus on really old building and imagine we're in charge of their conservation. We want to know **how much of the city would be affected by a non-construction zone of 100m around pre-1850 buildings**.
+Let's focus on really old building and imagine we're in charge of their conservation. We want to know **how much of the city would be affected by a non-construction zone of 100m around pre-1800 buildings**.
 
 Let's select them and see where they are.
 
 
 ## Conservation in Brielle, NL `r emo::ji("building")` 
-
-
 
 
 :::: {.columns}
@@ -280,15 +289,19 @@ Let's select them and see where they are.
 
 ```{r old-buildings}
 #| eval: false
-old <- 1800 # year prior to which you consider a building old
+old <- 1800 
 
 summary(buildings$start_date)
-buildings$start_date <- as.numeric(as.character(buildings$start_date))
+buildings$start_date <- 
+  as.numeric(as.character(
+    buildings$start_date
+    ))
 
 old_buildings <- buildings %>%
   filter(start_date <= old)
 
- ggplot(data = old_buildings) + geom_sf(colour="red")
+ ggplot(data = old_buildings) + 
+   geom_sf(colour="red")
  
 ```
 
@@ -309,7 +322,7 @@ As conservationists, we want to create a zone around historical buildings where 
 
 ## Buffer 
 
-Let's say this zone should be 500 meters. In GIS terms, we want to create a buffer around polygons. 
+Let's say this zone should be 100 meters. In GIS terms, we want to create a buffer around polygons. 
 The corresponding function `sf` is `st_buffer`, with 2 arguments:
 
 - "x": the polygons around which to create buffers
@@ -395,7 +408,8 @@ Now what we would like to distinguish conservation areas based on the number of 
    mutate(n_buildings = centroid_by_buffer$n)
 
   ggplot() + 
-   geom_sf(data = single_buffer, aes(fill=n_buildings)) +
+   geom_sf(data = single_buffer, 
+           aes(fill=n_buildings)) +
    scale_fill_viridis_c(alpha = 0.8,
                         begin = 0.6,
                         end = 1,
@@ -494,9 +508,16 @@ Represent visually how many buildings are contained in each of the new buffers
 
 ## Problem
 
-![](fig/rmd-04prewar-replication-1.png){fig-align="center"}
-*there are many pre-war buildings and the buffers are large so the number of old buildings is not very meaningful. Let's compute the density of old buildings per buffer zone.*
 
+:::: {.columns}
+
+::: {.column width="30%"}
+*there are many pre-war buildings and the buffers are large so the number of old buildings is not very meaningful. Let's compute the density of old buildings per buffer zone.*
+::: 
+::: {.column width="70%"}
+![](fig/rmd-04prewar-replication-1.png){fig-align="center" }
+::: 
+::::
 
 
 ## `r emo::ji("alarm")` Challenge: visualise the density of old buildings
@@ -561,3 +582,36 @@ In short:
 - Use the `ggplot` package to map the results
 
 
+
+## `r emo::ji("rabbit")`The end... wait!
+![](fig/Thats_all_folks.svg.png){fig-align="center"}
+
+## `r emo::ji("talk")` A few words of caution
+
+We have taught you to think, type, try, test, read the documentation.
+This is not only the old fashion way, but the foundation.
+
+When you encounter a bug, a challenge, a question that we have not covered, you could always make use of:
+
+- StackOverflow
+- chatGPT
+- `< include name of future AI here >`
+
+But be careful to keep it as a help, tool and support whose quality you can still assess. They can provide fixes that you do not understand, answers that don't make sense, and even wrong answers! So build yourself some foundations before you get into them.
+
+
+## `r emo::ji("family")` Better together
+
+If you have a question or want to exchange with R-enthustiastic urbanists, we have a community called Rbanism. You are welcome to join our educational, social and technical events. 
+
+
+**The next one is actually next Thursday (8th June).
+3:30pm-7pm, BK
+Room K then Bouwpub.**
+
+## `r emo::ji("pizza")` Better together
+Additionally, at the TU-Delft level, there is an initiative called the R-Café, meeting monthly to discuss tools, applications and functions in R, whilst eating pizza and drinking coffee (aka healthy lifestyle). The next one will be dedicated to this workshop, and will happen on Tuesday 20th June at 3pm (no pizza exceptionally...)
+
+https://delft-rcafe.github.io/home/Index.html
+
+![](fig/rcafe.png){fig-align="center"}

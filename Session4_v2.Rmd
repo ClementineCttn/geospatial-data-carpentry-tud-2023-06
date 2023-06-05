@@ -49,7 +49,7 @@ The geospatial data underlying this interface is made of geometrical objects (i.
 
 ## How to extract geospatial data from Open Street Map?
 
-### Bonding-box
+### Bounding-box
 
 The first thing to do is to define the area within which you want to retrieve data, aka the *bounding box*. This can be defined easily using a place name and the function `getbb()` from the package `osmdata`. 
 
@@ -57,20 +57,27 @@ The first thing to do is to define the area within which you want to retrieve da
 
 We are going to look at *Brielle* together, but you can also work with the small cities of *Naarden*, *Geertruidenberg*, *Gorinchem*, *Enkhuizen* or *Dokkum*.
 
-```{r osm-bounding-box}
-assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+/!\ This might not be needed, but ensures that your machine knows it has internet...
 
+```{r osm-curl-internet}
+assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
+```
+
+
+```{r osm-bounding-box}
 bb <- getbb('Brielle', format_out = 'sf_polygon')
 bb
 ```
 - Why multiple polygons?
 
 Because there are different responses from the API query, corresponding to different objects at the same location, or different objects are different locations.
-Here, we have two options:
-![Brielle, Netherlands](fig/Brielle_NL.jpeg){width=50%}
-or
-![Brielle, New Jersey](fig/Brielle_NJ.jpeg){width=50%}
+Here, we have two options: Brielle (Netherlands) and Brielle (New Jersey)
 
+
+![Brielle, Netherlands](fig/Brielle_NL.jpeg){width=40%}
+![Brielle, New Jersey](fig/Brielle_NJ.jpeg "Brielle, New Jersey"){width=40%}
+
+You can therefore try to be more precise by adding a country code or district name.
 ```{r osm-bounding-box2}
 bb <- getbb('Brielle, NL', format_out = 'data.frame')
 bb
@@ -102,7 +109,7 @@ For instance: the building age focusing on post-1900 buildings.
 
 ## Projections
 
-First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centred on the Netherlands.
+First, we are going to select the polygons and reproject them with the Amersfoort/RD New projection, suited for maps centred on the Netherlands. This code for this projection is: 28992.
 
 ```{r reproject}
 buildings <- x$osm_polygons %>%
@@ -116,7 +123,13 @@ Then we create a variable which a threshold at 1900. Every date prior to 1900 wi
 Then we use the `ggplot` function to visualise the buildings by age. The specific function to represent information as a map is `geom_sf()`. The rest works like other graphs and visualisation, with `aes()` for the aesthetics.
 
 ```{r map-age}
-buildings$build_date <- as.numeric(if_else(as.numeric(buildings$start_date) <1900, 1900,as.numeric(buildings$start_date)))
+buildings$build_date <- as.numeric(
+  if_else(
+    as.numeric(buildings$start_date) < 1900, 
+          1900, 
+          as.numeric(buildings$start_date)
+          )
+  )
 
  ggplot(data = buildings) +
    geom_sf(aes(fill = build_date, colour=build_date))  +
@@ -127,7 +140,7 @@ buildings$build_date <- as.numeric(if_else(as.numeric(buildings$start_date) <190
 So this reveals the historical centre of [city] and the various extensions.
 Anything odd? what? around the centre? Why these limits / isolated points?
 
-## Challenge: import an interactive basemap layer under the buildings with `Leaflet`
+## Challenge: import an interactive basemap layer under the buildings with `Leaflet` (15 min)
 
 Some information here: [leaflet package documentation](https://rstudio.github.io/leaflet/)
 ---
@@ -163,7 +176,7 @@ It contains a large set of functions to achieve all the operations on vector spa
 
 ## Conservation in Brielle, NL
 
-Let's focus on old building and imagine we're in charge of their conservation. We want to know how much of the city would be affected by a non-construction zone of 100m around pre-1850 buildings.
+Let's focus on old buildings and imagine we're in charge of their conservation. We want to know how much of the city would be affected by a non-construction zone of 100m around pre-1800 buildings.
 
 Let's select them and see where they are.
 
@@ -184,7 +197,7 @@ As conservationists, we want to create a zone around historical buildings where 
 
 ## Buffer
 
-Let's say this zone should be 500 meters. In GIS terms, we want to create a buffer around polygons. The corresponding function `sf` is `st_buffer`, with 2 arguments: the polygons around which to create buffers, and the radius of the buffer.
+Let's say this zone should be 100 meters. In GIS terms, we want to create a buffer around polygons. The corresponding function `sf` is `st_buffer`, with 2 arguments: the polygons around which to create buffers, and the radius of the buffer.
 
 
 ```{r buffers}
@@ -268,7 +281,7 @@ ggplot() +
 
 ```
  
-### Exercise
+### Exercise (10 min)
  
 ## Challenge: Conservation rules have changed. The historical threshold now applies to all pre-war buildings, but the distance to these building is reduced to 10m. Can you map the number of all buildings per 10m fused buffer?
 
