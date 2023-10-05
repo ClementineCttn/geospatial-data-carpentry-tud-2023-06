@@ -1,5 +1,5 @@
 ---
-title: "Session 4: Combining Vector and Raster Data"
+title: "Session 4: GIS Operations"
 author: "Clémentine Cottineau"
 format: 
   revealjs:
@@ -16,6 +16,13 @@ format:
 - Import, select, and visualise OSM vector data
 - Learn about basic GIS operation: spatial buffers, centroids, area calculation and vector/raster intersection
 
+# Resources
+
+https://datacarpentry.org/organization-geospatial/03-crs.html
+
+https://saylordotorg.github.io/text_essentials-of-geographic-information-systems/ 
+
+https://www.nfb.ca/film/impossible_map/
 
 
 ```{r}
@@ -40,6 +47,8 @@ knitr::opts_chunk$set(
   warning = FALSE
   )
 ```
+
+
 
 # Part 1. Import vector data from Open Street Map
 
@@ -268,12 +277,22 @@ In short:
 - `sf` is a package which supports simple features (sf), ["a standardized way to
 encode spatial vector data."](https://cran.r-project.org/web/packages/sf/sf.pdf).
 
-- It contains a large set of functions to achieve all the operations on vector spatial data for which you might use traditional GIS software: change the coordinate system, join layers, intersect or unit polygons, create buffers and centroids, etc. cf. the `sf` [cheatsheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/sf.pdf).
+- It contains a large set of functions to achieve all the operations on vector spatial data for which you might use traditional GIS software: change the coordinate system, join layers, intersect or unit polygons, create buffers and centroids, etc. 
 
-- We are going to go through some of these basics with the case study of Brielle buildings.
+- cf. the `sf` [cheatsheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/sf.pdf).
 
+## the 'sf' cheatsheet `r emo::ji("map")` 
+
+![](fig/sf_cheatsheet1.png){fig-align="center"}
+
+
+## the 'sf' cheatsheet `r emo::ji("map")` 
+
+![](fig/sf_cheatsheet2.png){fig-align="center"}
 
 ## Conservation in Brielle, NL `r emo::ji("building")` 
+
+ We are going to go through some of these basics with the case study of Brielle buildings.
 
 Let's focus on really old building and imagine we're in charge of their conservation. We want to know **how much of the city would be affected by a non-construction zone of 100m around pre-1800 buildings**.
 
@@ -389,11 +408,19 @@ ggplot() +
 
 ## Centroids
 
-![](fig/rmd-04centroids-1.png){fig-align="center"}
+![](fig/rmd-04centroids-1.png){fig-align="center" height=100%}
 
 ## Intersection
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
 Now what we would like to distinguish conservation areas based on the number of historic buildings they contain. In GIS terms, we would like to know how many centroids each fused buffer polygon contains. This operation means intersecting the layer of polygons with the layer of points and the corresponding function is `st_intersection`.
 
+:::
+
+::: {.column width="50%"}
 
 ```{r intersection}
 #| eval: false
@@ -416,6 +443,11 @@ Now what we would like to distinguish conservation areas based on the number of 
                         direction = -1,
                         option = "B")
 ```
+
+::: 
+
+::::
+
 
 ## Final Output
 
@@ -600,18 +632,24 @@ When you encounter a bug, a challenge, a question that we have not covered, you 
 But be careful to keep it as a help, tool and support whose quality you can still assess. They can provide fixes that you do not understand, answers that don't make sense, and even wrong answers! So build yourself some foundations before you get into them.
 
 
-## `r emo::ji("family")` Better together
 
-If you have a question or want to exchange with R-enthustiastic urbanists, we have a community called Rbanism. You are welcome to join our educational, social and technical events. 
+## What's next?
 
+- Workshop material and links to other resources will be shared via email
+- [R Café](https://delft-rcafe.github.io/home/Index.html) - Join the next session on June 20 (3pm @BK) dedicated to our workshop participants
+- Join the [Rbanism Scalable GIS challenge](https://github.com/Rbanism/scalegis-challenge) - deadline June 22
+- Join the Rbanism community launch on June 8, 3:30pm-7pm, @BK-Room K then Bouwpub
+- Join the Lunch Discussion [Time Travelling in Geo-spatial Data](https://www.eventbrite.com/e/lunch-discussion-time-travelling-in-geo-spatial-data-tickets-643560676307?aff=oddtdtcreator) organised by the OSCD
+- [DCC](https://www.tudelft.nl/index.php?id=67120&L=1/) and the [TU Delft Library](https://www.tudelft.nl/en/library/research-data-management/r/training-events/training-for-researchers) - They are there to help
 
-**The next one is actually next Thursday (8th June).
-3:30pm-7pm, BK
-Room K then Bouwpub.**
+:::: {.columns}
 
-## `r emo::ji("pizza")` Better together
-Additionally, at the TU-Delft level, there is an initiative called the R-Café, meeting monthly to discuss tools, applications and functions in R, whilst eating pizza and drinking coffee (aka healthy lifestyle). The next one will be dedicated to this workshop, and will happen on Tuesday 20th June at 3pm (no pizza exceptionally...)
+:::{.column width=45%}
+- Give us feedback! ![](post-workshop-survey.png){.absolute top=340 left=240 width=200}
+:::
 
-https://delft-rcafe.github.io/home/Index.html
+:::{.column}
+- Drinks! Join Rbanism: ![](rbanism-membership.png){.absolute top=340 left=760 width=200}
+:::
 
-![](fig/rcafe.png){fig-align="center"}
+::::

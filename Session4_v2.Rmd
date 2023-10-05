@@ -1,9 +1,10 @@
 ---
-source: Rmd
 title: "GIS operation on vector and raster data"
 author: "Clémentine Cottineau"
-teaching: 75
+source: Rmd
+output: pdf_document
 exercises: 45
+teaching: 75
 ---
 
 # Objectives:
@@ -33,6 +34,8 @@ library(sf)
 library(ggplot2)
 library(osmdata)
 library(leaflet)
+install.packages("nominatimlite")
+library(nominatimlite)
 ```
 
 # Part 1. Import vector data from Open Street Map
@@ -65,7 +68,10 @@ assign("has_internet_via_proxy", TRUE, environment(curl::has_internet))
 
 
 ```{r osm-bounding-box}
-bb <- getbb('Brielle', format_out = 'sf_polygon')
+
+
+nominatim_polygon <- nominatimlite::geo_lite_sf(address = "Brielle", points_only = FALSE)
+bb <- sf::st_bbox(nominatim_polygon)
 bb
 ```
 - Why multiple polygons?
@@ -79,7 +85,8 @@ Here, we have two options: Brielle (Netherlands) and Brielle (New Jersey)
 
 You can therefore try to be more precise by adding a country code or district name.
 ```{r osm-bounding-box2}
-bb <- getbb('Brielle, NL', format_out = 'data.frame')
+nominatim_polygon <- nominatimlite::geo_lite_sf(address = "Brielle, NL", points_only = FALSE)
+bb <- sf::st_bbox(nominatim_polygon)
 bb
 
 ```
