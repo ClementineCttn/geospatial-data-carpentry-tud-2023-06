@@ -99,12 +99,12 @@ Let's say we want to download data from OpenStreetMap and we know there is a pac
 
 > Let's check the documentation [online](https://docs.ropensci.org/osmdata/):
 
-![OSMdata](fig/osmdata.png){width=80%}
+![The OSMdata Documentation page](fig/osmdata.png){width=80%}
 
 
 It appears that there is a function to extract features, using the Overpass API. This function's name is `opq` (for OverPassQuery) which, in combination with `add_osm_feature`, seems to do the job. However it might not be crystal clear how  to apply it to our case. Let's click on the function name to know more.
 
-![OPQ](fig/opq.png){width=80%}
+![The Overpass Query Documentation page](fig/opq.png){width=80%}
 
 
 On this page we can read about the arguments needed for each function: a bounding box for `opq()` and some `key` and `value` for `add_osm_feature()`. Thanks to the examples provided, we can assume that these keys and values correspond to different levels of tags from the OSM classification. In our case, we will keep it at the first level of classification, with "buildings" as `key`, and no value. We also see from the examples that another function is needed when working with the `sf` package: `osmdata_sf()`. This ensures that the type of object is suited for `sf`. With these tips and examples, we can write our feature extraction function as follows:
@@ -159,9 +159,14 @@ buildings$build_date <- as.numeric(
 So this reveals the historical centre of [city] and the various extensions.
 Anything odd? what? around the centre? Why these limits / isolated points?
 
-## Challenge: import an interactive basemap layer under the buildings with `Leaflet` (15 min)
+## Challenge: import an interactive basemap layer under the buildings with `Leaflet` (20 min)
 
-Some information here: [leaflet package documentation](https://rstudio.github.io/leaflet/)
+- Check out the [leaflet package documentation](https://rstudio.github.io/leaflet/)
+- Plot a basemap in Leaflet and try different tiles. [Basemap documentation](https://rstudio.github.io/leaflet/basemaps.html)
+- Transform the buildings into WGS84 projection and add them to the basemap layer with the `addPolygons` function.
+- Have the `fillColor` of these polygons represent the `build_date` variable. [Choropleth documentation](https://rstudio.github.io/leaflet/choropleths.html). Using the example and replace the variable names where needed.
+
+
 ---
 
 ## Solution
